@@ -1,17 +1,18 @@
 ### Cloudwatch Events ###
-# Event rule: 월~금 09시에 시작
+# UTC임에 주의
+# Event rule: 월~금 09시에 시작 (09+9 = 18)
 resource "aws_cloudwatch_event_rule" "start_instances_event_rule" {
   name = "start_instances_event_rule"
   description = "Starts stopped EC2 instances"
-  schedule_expression = "cron(0 9 ? * MON-FRI *)"
+  schedule_expression = "cron(0 18 ? * MON-FRI *)"
   depends_on = ["aws_lambda_function.ec2_start_scheduler_lambda"]
 }
 
-# Event rule: 월~금 18시에 정지
+# Event rule: 월~금 18시에 정지 (18 + 9 = 24 + 3)
 resource "aws_cloudwatch_event_rule" "stop_instances_event_rule" {
   name = "stop_instances_event_rule"
   description = "Stops running EC2 instances"
-  schedule_expression = "cron(0 18 ? * MON-FRI *)"
+  schedule_expression = "cron(0 3 ? * MON-FRI *)"
   depends_on = ["aws_lambda_function.ec2_stop_scheduler_lambda"]
 }
 

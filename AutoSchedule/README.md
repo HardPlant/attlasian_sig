@@ -2,8 +2,11 @@
 
 ### lambda 함수 생성
 
-### cloudwatch
+### terraform cloudwatch
+
+### terraform lambda
 
 ### 참고자료
 
+[]https://aws.amazon.com/ko/premiumsupport/knowledge-center/start-stop-lambda-cloudwatch/
 [](https://www.hugopicado.com/2019/03/18/aws-ec2-shutdown-scheduler-with-terraform.html)
