@@ -66,6 +66,7 @@ resource "aws_instance" "confluence" {
   instance_type = "t3.micro"
   tags = {
       Name = "confluence"
+      AutoStop = "true"
   }
   connection {
     # The default username for our AMI
@@ -91,6 +92,7 @@ resource "aws_instance" "jira" {
   instance_type = "t3.micro"
   tags = {
       Name = "jira"
+      AutoStop = "true"
   }
   connection {
     # The default username for our AMI
