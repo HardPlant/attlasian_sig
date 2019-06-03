@@ -5,11 +5,11 @@ provider "aws" {
 }
 
 # 도메인 이름을 설정한다.
-resource "aws_route53_zone" "main" {
-  name = "themirai.net"
-}
+#resource "aws_route53_zone" "main" {
+#  name = "themirai.net"
+#}
 
-# Zone을 생성했다면 삭제할 필요 없이 Zone id를 기존에 있는 것으로 치환할 수 있다.
+# 도메인을 발급받으면 있는 호스팅 존의 id를 입력한다.
 resource "aws_route53_record" "jira-ns" {
   zone_id = "Z56PIPHDDL0GK"
   name    = "jira.themirai.net"
