@@ -1,0 +1,2 @@
+https://www.atlassian.com/software/confluence/downloads/binary/atlassian-confluence-6.15.4-x64.bin
+https://www.atlassian.com/software/jira/downloads/binary/atlassian-jira-software-8.2.1-x64.bin
