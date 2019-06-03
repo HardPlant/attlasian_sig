@@ -5,12 +5,13 @@ provider "aws" {
 }
 
 # 도메인 이름을 설정한다,
-resource "aws_route53_zone" "main" {
-  name = "themirai.net"
-}
+#resource "aws_route53_zone" "main" {
+#  name = "themirai.net"
+#}
 
+# Zone을 생성했다면 삭제할 필요 없이 Zone id를 기존에 있는 것으로 치환할 수 있다.
 resource "aws_route53_record" "jira-ns" {
-  zone_id = "${aws_route53_zone.main.zone_id}"
+  zone_id = "Z56PIPHDDL0GK"
   name    = "jira.themirai.net"
   type    = "A"
   ttl     = "30"
@@ -165,6 +166,6 @@ resource "aws_instance" "jira" {
   }
 
   provisioner "local-exec" {
-    command = "echo ${aws_instance.confluence.public_ip} > ip_address_jira.txt"
+    command = "echo ${aws_instance.jira.public_ip} > ip_address_jira.txt"
   }
 }
