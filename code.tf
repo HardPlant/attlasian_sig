@@ -4,10 +4,10 @@ provider "aws" {
   secret_key = "${var.secret_key}"
 }
 
-# 도메인 이름을 설정한다,
-#resource "aws_route53_zone" "main" {
-#  name = "themirai.net"
-#}
+# 도메인 이름을 설정한다.
+resource "aws_route53_zone" "main" {
+  name = "themirai.net"
+}
 
 # Zone을 생성했다면 삭제할 필요 없이 Zone id를 기존에 있는 것으로 치환할 수 있다.
 resource "aws_route53_record" "jira-ns" {
@@ -22,7 +22,7 @@ resource "aws_route53_record" "jira-ns" {
 }
 
 resource "aws_route53_record" "confluence-ns" {
-  zone_id = "${aws_route53_zone.main.zone_id}"
+  zone_id = "Z56PIPHDDL0GK"
   name    = "confluence.themirai.net"
   type    = "A"
   ttl     = "30"
@@ -53,6 +53,7 @@ resource "aws_vpc" "default" {
 resource "aws_internet_gateway" "default" {
   vpc_id = "${aws_vpc.default.id}"
 }
+
 resource "aws_route" "internet_access" {
   route_table_id         = "${aws_vpc.default.main_route_table_id}"
   destination_cidr_block = "0.0.0.0/0"
@@ -102,6 +103,20 @@ resource "aws_security_group" "default" {
     from_port   = 0
     to_port     = 0
     protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+# Jira
+  ingress {
+    from_port   = 8080
+    to_port     = 8080
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+# Confluence
+  ingress {
+    from_port   = 8090
+    to_port     = 8090
+    protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
 }
