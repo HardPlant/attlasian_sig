@@ -1,3 +1,8 @@
+provider "aws" {
+  region     = "ap-northeast-2"
+  access_key = "${var.access_key}"
+  secret_key = "${var.secret_key}"
+}
 
 # 도메인 이름을 설정한다,
 resource "aws_route53_zone" "main" {
