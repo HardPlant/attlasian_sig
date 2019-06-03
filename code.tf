@@ -125,7 +125,7 @@ resource "aws_instance" "confluence" {
     # The connection will use the local SSH agent for authentication.
   }
 
-  key_name               = "${aws_key_pair.auth.id}"
+  key_name               = "${var.key_name}"
   vpc_security_group_ids = ["${aws_security_group.default.id}"]
   subnet_id              = "${aws_subnet.default.id}"
 
@@ -156,7 +156,7 @@ resource "aws_instance" "jira" {
     # The connection will use the local SSH agent for authentication.
   }
 
-  key_name               = "${aws_key_pair.auth.id}"
+  key_name               = "${var.key_name}"
   vpc_security_group_ids = ["${aws_security_group.default.id}"]
   subnet_id              = "${aws_subnet.default.id}"
 
@@ -167,8 +167,4 @@ resource "aws_instance" "jira" {
   provisioner "local-exec" {
     command = "echo ${aws_instance.confluence.public_ip} > ip_address_jira.txt"
   }
-}
-
-resource "aws_key_pair" "auth" {
-  public_key = "${file(var.public_key_path)}"
 }
