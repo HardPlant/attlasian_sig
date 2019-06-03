@@ -9,19 +9,10 @@ resource "aws_route53_zone" "main" {
   name = "themirai.net"
 }
 
-# jira 서브도메인을 설정한다.
-resource "aws_route53_zone" "jira" {
-  name = "jira.themirai.net"
-
-  tags = {
-    Environment = "jira"
-  }
-}
-
 resource "aws_route53_record" "jira-ns" {
   zone_id = "${aws_route53_zone.main.zone_id}"
   name    = "jira.themirai.net"
-  type    = "NS"
+  type    = "A"
   ttl     = "30"
 
   records = [
@@ -29,19 +20,10 @@ resource "aws_route53_record" "jira-ns" {
   ]
 }
 
-# Confluence 서브도메인을 설정한다.
-resource "aws_route53_zone" "confluence" {
-  name = "confluence.themirai.net"
-
-  tags = {
-    Environment = "confluence"
-  }
-}
-
 resource "aws_route53_record" "confluence-ns" {
   zone_id = "${aws_route53_zone.main.zone_id}"
   name    = "confluence.themirai.net"
-  type    = "NS"
+  type    = "A"
   ttl     = "30"
 
   records = [
@@ -188,6 +170,5 @@ resource "aws_instance" "jira" {
 }
 
 resource "aws_key_pair" "auth" {
-  key_name   = "${var.key_name}"
   public_key = "${file(var.public_key_path)}"
 }
