@@ -4,11 +4,7 @@
 
 * 자동화기 전에 EC2 쉘에 생성할 키 페어를 만들어야 한다.
 
-```
-ssh-keygen -y -f ConfluenceJira.pem > id_rsa.pub
-```
-
-* 이 명령어는 
+* terraform에 적용할 IAM 역할을 생성한다.
 
 ### 인프라 생성
 
