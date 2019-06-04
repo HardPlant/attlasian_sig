@@ -1,6 +1,10 @@
 # Attlassian Sig
 
+### 키 페어 생성
 
+* 자동화기 전에 EC2 쉘에 생성할 키 페어를 만들어야 한다.
+
+* terraform에 적용할 IAM 역할을 생성한다.
 
 ### 인프라 생성
 
@@ -16,7 +20,148 @@ AWS IAM에서 아이디를 하나 발급받아 `aws configure`로 액세스 ID�
 
 `terraform show` 명령어로 클라우드 자원의 현재 상태를 확인한다.
 
-##### Provisioner
+##### 도메인 추가
+
+* Route53, EIP를 이용해 EC2 인스턴스와 연결할 도메인을 생성한다.
+
+```t
+#####################
+# 도메인 이름을 설정한다.
+#####################
+resource "aws_route53_zone" "main" {
+  name = "themirai.net"
+}
+
+# jira 서브도메인을 설정한다.
+resource "aws_route53_zone" "jira" {
+  name = "jira.themirai.net"
+
+  tags = {
+    Environment = "jira"
+  }
+}
+
+# Simple Routing으로, 도메인과 IP를 즉시 연결한다.
+# ELB를 사용하지 않으므로, https를 직접 설정해주어야 한다.
+
+resource "aws_route53_record" "jira-ns" {
+  zone_id = "${aws_route53_zone.main.zone_id}"
+  name    = "jira.themirai.net"
+  type    = "NS"
+  ttl     = "30"
+
+  records = [
+    "${aws_eip.jira.public_ip}",
+  ]
+}
+
+# Confluence 서브도메인을 설정한다.
+resource "aws_route53_zone" "confluence" {
+  name = "confluence.themirai.net"
+
+  tags = {
+    Environment = "confluence"
+  }
+}
+
+resource "aws_route53_record" "confluence-ns" {
+  zone_id = "${aws_route53_zone.main.zone_id}"
+  name    = "confluence.themirai.net"
+  type    = "NS"
+  ttl     = "30"
+
+  records = [
+    "${aws_eip.confluence.public_ip}",
+  ]
+}
+#################################################
+# Confluence, Jira 도메인 이름과 연동할 EIP를 가져온다.
+#################################################
+
+resource "aws_eip" "confluence" {
+  instance = "${aws_instance.confluence.id}"
+  vpc      = true
+}
+
+resource "aws_eip" "jira" {
+  instance = "${aws_instance.jira.id}"
+  vpc      = true
+}
+```
+##### 네트워킹
+
+VPC를 이용해 가상 내부망을 생성하고, 해당 내부망을 인터넷과 연결한다.
+또한 방화벽을 설정해 포트를 열어준다.
+
+```t
+
+# VPC : 가상 내부망을 하나 설정한다.
+resource "aws_vpc" "default" {
+  cidr_block = "10.0.0.0/16"
+}
+
+# Grant the VPC internet access on its main route table
+# Default Gateway : 내부망의 게이트웨이를 설정한다.
+resource "aws_internet_gateway" "default" {
+  vpc_id = "${aws_vpc.default.id}"
+}
+resource "aws_route" "internet_access" {
+  route_table_id         = "${aws_vpc.default.main_route_table_id}"
+  destination_cidr_block = "0.0.0.0/0"
+  gateway_id             = "${aws_internet_gateway.default.id}"
+}
+
+# Create a subnet to launch our instances into
+resource "aws_subnet" "default" {
+  vpc_id                  = "${aws_vpc.default.id}"
+  cidr_block              = "10.0.1.0/24"
+  map_public_ip_on_launch = true
+}
+
+# Our default security group to access
+# the instances over SSH and HTTP
+resource "aws_security_group" "default" {
+  name        = "terraform_example"
+  description = "Used in the terraform"
+  vpc_id      = "${aws_vpc.default.id}"
+
+  # SSH access from anywhere
+  ingress {
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  # HTTP access from anywhere
+  ingress {
+    from_port   = 80
+    to_port     = 80
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  # HTTPS
+  ingress {
+    from_port   = 443
+    to_port     = 443
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  # outbound internet access
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+}
+```
+
+##### 인스턴스 생성 및 Provisioner 설정
+
+EC2 인스턴스를 추가하고 인스턴스 생성 후 즉시 실행할 스크립트를 설정한다.
 
 [참고자료](https://www.terraform.io/intro/examples/aws.html)
 

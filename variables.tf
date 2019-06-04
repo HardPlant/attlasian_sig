@@ -9,6 +9,5 @@ DESCRIPTION
   default = "/home/seongwon/repo/atlassian_sig/id_rsa.pub"
 }
 variable "key_name" {
-  description = "Desired name of AWS key pair"
-  default = "confjira"
+  default = "ConfluenceJira"
 }

@@ -1,15 +1,59 @@
+provider "aws" {
+  region     = "ap-northeast-2"
+  access_key = "${var.access_key}"
+  secret_key = "${var.secret_key}"
+}
 
-# VPC
+# 도메인 이름을 설정한다.
+#resource "aws_route53_zone" "main" {
+#  name = "themirai.net"
+#}
+
+# 도메인을 발급받으면 있는 호스팅 존의 id를 입력한다.
+resource "aws_route53_record" "jira-ns" {
+  zone_id = "Z56PIPHDDL0GK"
+  name    = "jira.themirai.net"
+  type    = "A"
+  ttl     = "30"
+
+  records = [
+    "${aws_eip.jira.public_ip}",
+  ]
+}
+
+resource "aws_route53_record" "confluence-ns" {
+  zone_id = "Z56PIPHDDL0GK"
+  name    = "confluence.themirai.net"
+  type    = "A"
+  ttl     = "30"
+
+  records = [
+    "${aws_eip.confluence.public_ip}",
+  ]
+}
+
+# Confluence, Jira 도메인 이름과 연동할 IP를 가져온다.
+resource "aws_eip" "confluence" {
+  instance = "${aws_instance.confluence.id}"
+  vpc      = true
+}
+
+resource "aws_eip" "jira" {
+  instance = "${aws_instance.jira.id}"
+  vpc      = true
+}
+
+# Grant the VPC internet access on its main route table
+# VPC : 가상 내부망을 하나 설정한다.
 resource "aws_vpc" "default" {
   cidr_block = "10.0.0.0/16"
 }
 
-# Default Gateway
+# Default Gateway : 내부망의 게이트웨이를 설정한다.
 resource "aws_internet_gateway" "default" {
   vpc_id = "${aws_vpc.default.id}"
 }
 
-# Grant the VPC internet access on its main route table
 resource "aws_route" "internet_access" {
   route_table_id         = "${aws_vpc.default.main_route_table_id}"
   destination_cidr_block = "0.0.0.0/0"
@@ -22,6 +66,7 @@ resource "aws_subnet" "default" {
   cidr_block              = "10.0.1.0/24"
   map_public_ip_on_launch = true
 }
+
 # Our default security group to access
 # the instances over SSH and HTTP
 resource "aws_security_group" "default" {
@@ -44,6 +89,7 @@ resource "aws_security_group" "default" {
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
+
   # HTTPS
   ingress {
     from_port   = 443
@@ -51,6 +97,7 @@ resource "aws_security_group" "default" {
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
+
   # outbound internet access
   egress {
     from_port   = 0
@@ -58,30 +105,50 @@ resource "aws_security_group" "default" {
     protocol    = "-1"
     cidr_blocks = ["0.0.0.0/0"]
   }
+# Jira
+  ingress {
+    from_port   = 8080
+    to_port     = 8080
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+# Confluence
+  ingress {
+    from_port   = 8090
+    to_port     = 8090
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
 }
+
 # 인스턴스
 
 resource "aws_instance" "confluence" {
   ami           = "ami-08ab3f7e72215fe91" # Amazon Linux 2 AMI (HVM), SSD Volume Type
   instance_type = "t3.micro"
+
   tags = {
-      Name = "confluence"
-      AutoStop = "true"
+    Name     = "confluence"
+    AutoStop = "true"
   }
+
   connection {
     # The default username for our AMI
     user = "ec2-user"
+
     #user = "ubuntu" #for ubuntu
 
     # The connection will use the local SSH agent for authentication.
   }
-  key_name = "${aws_key_pair.auth.id}"
+
+  key_name               = "${var.key_name}"
   vpc_security_group_ids = ["${aws_security_group.default.id}"]
-  subnet_id = "${aws_subnet.default.id}"
-  
+  subnet_id              = "${aws_subnet.default.id}"
+
   root_block_device {
-      volume_size = 10
+    volume_size = 10
   }
+
   provisioner "local-exec" {
     command = "echo ${aws_instance.confluence.public_ip} > ip_address_confluence.txt"
   }
@@ -90,30 +157,30 @@ resource "aws_instance" "confluence" {
 resource "aws_instance" "jira" {
   ami           = "ami-08ab3f7e72215fe91" # Amazon Linux 2 AMI (HVM), SSD Volume Type
   instance_type = "t3.micro"
+
   tags = {
-      Name = "jira"
-      AutoStop = "true"
+    Name     = "jira"
+    AutoStop = "true"
   }
+
   connection {
     # The default username for our AMI
     user = "ec2-user"
+
     #user = "ubuntu" #for ubuntu
 
     # The connection will use the local SSH agent for authentication.
   }
-  key_name = "${aws_key_pair.auth.id}"
-  vpc_security_group_ids = ["${aws_security_group.default.id}"]
-  subnet_id = "${aws_subnet.default.id}"
-  
-  root_block_device = {
-      volume_size = 10
-  }
-  provisioner "local-exec" {
-    command = "echo ${aws_instance.confluence.public_ip} > ip_address_jira.txt"
-  }
-}
 
-resource "aws_key_pair" "auth" {
-  key_name   = "${var.key_name}"
-  public_key = "${file(var.public_key_path)}"
+  key_name               = "${var.key_name}"
+  vpc_security_group_ids = ["${aws_security_group.default.id}"]
+  subnet_id              = "${aws_subnet.default.id}"
+
+  root_block_device = {
+    volume_size = 10
+  }
+
+  provisioner "local-exec" {
+    command = "echo ${aws_instance.jira.public_ip} > ip_address_jira.txt"
+  }
 }
