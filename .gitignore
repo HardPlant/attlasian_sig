@@ -37,3 +37,5 @@ key.tf
 *.pem
 ip_address_confluence.txt
 ip_address_jira.txt
+AutoSchedule/start_instances.zip
+AutoSchedule/stop_instances.zip
