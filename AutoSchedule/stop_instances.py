@@ -2,7 +2,7 @@
 import boto3 # (AWS SDK)
 
 # Boto Connection
-ec2 = boto3.resource('ec2', 'ap-northeast-1')
+ec2 = boto3.resource('ec2', 'ap-northeast-2')
 
 # AWS Lambda 함수 (월 100만 call까지 무료)
 #
