@@ -125,7 +125,7 @@ resource "aws_security_group" "default" {
 
 resource "aws_instance" "confluence" {
   ami           = "ami-08ab3f7e72215fe91" # Amazon Linux 2 AMI (HVM), SSD Volume Type
-  instance_type = "t3.micro"
+  instance_type = "t3.small"
 
   tags = {
     Name     = "confluence"
@@ -152,11 +152,17 @@ resource "aws_instance" "confluence" {
   provisioner "local-exec" {
     command = "echo ${aws_instance.confluence.public_ip} > ip_address_confluence.txt"
   }
+
+  provisioner "remote-exec" {
+    inline = [
+      "wget https://www.atlassian.com/software/confluence/downloads/binary/atlassian-confluence-6.15.4-x64.bin"
+    ]
+  }
 }
 
 resource "aws_instance" "jira" {
   ami           = "ami-08ab3f7e72215fe91" # Amazon Linux 2 AMI (HVM), SSD Volume Type
-  instance_type = "t3.micro"
+  instance_type = "t3.small"
 
   tags = {
     Name     = "jira"
@@ -182,5 +188,11 @@ resource "aws_instance" "jira" {
 
   provisioner "local-exec" {
     command = "echo ${aws_instance.jira.public_ip} > ip_address_jira.txt"
+  }
+
+  provisioner "remote-exec" {
+    inline = [
+      "wget https://www.atlassian.com/software/jira/downloads/binary/atlassian-jira-software-8.2.1-x64.bin"
+    ]
   }
 }
