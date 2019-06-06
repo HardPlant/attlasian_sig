@@ -35,3 +35,5 @@ override.tf.json
 # End of https://www.gitignore.io/api/terraform
 key.tf
 *.pem
+ip_address_confluence.txt
+ip_address_jira.txt
