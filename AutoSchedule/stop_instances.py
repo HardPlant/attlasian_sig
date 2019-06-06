@@ -1,3 +1,4 @@
+#-*- coding: utf-8 -*-
 import boto3 # (AWS SDK)
 
 # Boto Connection
