@@ -11,7 +11,7 @@ provider "aws" {
 
 # 도메인을 발급받으면 있는 호스팅 존의 id를 입력한다.
 resource "aws_route53_record" "jira-ns" {
-  zone_id = "Z2H3WRNYL1YDH7"
+  zone_id = "Z3CARDE27EO8Y3"
   name    = "jira.themirai.net"
   type    = "A"
   ttl     = "30"
@@ -22,7 +22,7 @@ resource "aws_route53_record" "jira-ns" {
 }
 
 resource "aws_route53_record" "confluence-ns" {
-  zone_id = "Z2H3WRNYL1YDH7"
+  zone_id = "Z3CARDE27EO8Y3"
   name    = "confluence.themirai.net"
   type    = "A"
   ttl     = "30"
