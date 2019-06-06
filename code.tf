@@ -153,11 +153,16 @@ resource "aws_instance" "confluence" {
     command = "echo ${aws_instance.confluence.public_ip} > ip_address_confluence.txt"
   }
 
-  provisioner "remote-exec" {
-    inline = [
-      "wget https://www.atlassian.com/software/confluence/downloads/binary/atlassian-confluence-6.15.4-x64.bin"
-    ]
-  }
+  # provisioner "file" {
+  #   source = "download_confluence.sh",
+  #   destination = "/tmp/script.sh"
+  # }
+  # provisioner "remote-exec" {
+  #   inline = [
+  #     "chmod +x /tmp/script.sh",
+  #     "/tmp/script.sh"
+  #   ]
+  # }
 }
 
 resource "aws_instance" "jira" {
@@ -190,9 +195,14 @@ resource "aws_instance" "jira" {
     command = "echo ${aws_instance.jira.public_ip} > ip_address_jira.txt"
   }
 
-  provisioner "remote-exec" {
-    inline = [
-      "wget https://www.atlassian.com/software/jira/downloads/binary/atlassian-jira-software-8.2.1-x64.bin"
-    ]
-  }
+  # provisioner "file" {
+  #   source = "download_jira.sh",
+  #   destination = "/tmp/script.sh"
+  # }
+  # provisioner "remote-exec" {
+  #   inline = [
+  #     "chmod +x /tmp/script.sh",
+  #     "/tmp/script.sh"
+  #   ]
+  # }
 }
