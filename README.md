@@ -1,5 +1,15 @@
 # Attlassian Sig
 
+### 개요
+
+코드형 인프라스트럭쳐 도구인 `Terraform`으로 AWS 인프라를 생성한다.
+
+### 사전 준비
+
+[AWS Console 다운로드](https://s3.amazonaws.com/aws-cli/AWSCLI64.msi)
+
+[Terraform 다운로드](https://releases.hashicorp.com/terraform/0.12.1/terraform_0.12.1_windows_amd64.zip)
+
 ### 키 페어 생성
 
 * 자동화기 전에 EC2 쉘에 생성할 키 페어를 만들어야 한다.
