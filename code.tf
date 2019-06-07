@@ -124,8 +124,8 @@ resource "aws_security_group" "default" {
 # 인스턴스
 
 resource "aws_instance" "confluence" {
-  ami           = "ami-08ab3f7e72215fe91" # Amazon Linux 2 AMI (HVM), SSD Volume Type
-  instance_type = "t3.small"
+  ami           = "ami-0d854956dd41273cf" # Amazon Linux 2 AMI (HVM), SSD Volume Type
+  instance_type = "t3.medium"
 
   tags = {
     Name     = "confluence"
@@ -166,7 +166,7 @@ resource "aws_instance" "confluence" {
 }
 
 resource "aws_instance" "jira" {
-  ami           = "ami-08ab3f7e72215fe91" # Amazon Linux 2 AMI (HVM), SSD Volume Type
+  ami           = "ami-0b02efe469ac0d8b0" # Amazon Linux 2 AMI (HVM), SSD Volume Type
   instance_type = "t3.small"
 
   tags = {
