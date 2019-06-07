@@ -7,6 +7,7 @@
 ### 사전 준비
 
 [AWS Console 다운로드](https://s3.amazonaws.com/aws-cli/AWSCLI64.msi)
+
 [Terraform 다운로드](https://releases.hashicorp.com/terraform/0.12.1/terraform_0.12.1_windows_amd64.zip)
 
 ### 키 페어 생성
