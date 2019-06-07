@@ -105,14 +105,16 @@ resource "aws_security_group" "default" {
     protocol    = "-1"
     cidr_blocks = ["0.0.0.0/0"]
   }
-# Jira
+
+  # Jira
   ingress {
     from_port   = 8080
     to_port     = 8080
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
-# Confluence
+
+  # Confluence
   ingress {
     from_port   = 8090
     to_port     = 8090
@@ -125,7 +127,7 @@ resource "aws_security_group" "default" {
 
 resource "aws_instance" "confluence" {
   ami           = "ami-0d854956dd41273cf" # Amazon Linux 2 AMI (HVM), SSD Volume Type
-  instance_type = "t3.medium"
+  instance_type = "t3.small"
 
   tags = {
     Name     = "confluence"
@@ -157,12 +159,15 @@ resource "aws_instance" "confluence" {
   #   source = "download_confluence.sh",
   #   destination = "/tmp/script.sh"
   # }
-  # provisioner "remote-exec" {
-  #   inline = [
-  #     "chmod +x /tmp/script.sh",
-  #     "/tmp/script.sh"
-  #   ]
-  # }
+  provisioner "remote-exec" {
+    inline = [
+      "sudo swapoff -a",
+      "sudo dd if=/dev/z,ero of=/var/swapfile bs=1M count=1024",
+      "sudo mkswap /var/swapfile",
+      "sudo swapon /var/swapfile",
+      "sudo swapon -s",
+    ]
+  }
 }
 
 resource "aws_instance" "jira" {
@@ -199,10 +204,15 @@ resource "aws_instance" "jira" {
   #   source = "download_jira.sh",
   #   destination = "/tmp/script.sh"
   # }
-  # provisioner "remote-exec" {
-  #   inline = [
+   provisioner "remote-exec" {
+     inline = [
+      "sudo swapoff -a",
+      "sudo dd if=/dev/z,ero of=/var/swapfile bs=1M count=1024",
+      "sudo mkswap /var/swapfile",
+      "sudo swapon /var/swapfile",
+      "sudo swapon -s",
   #     "chmod +x /tmp/script.sh",
   #     "/tmp/script.sh"
-  #   ]
-  # }
+     ]
+   }
 }
