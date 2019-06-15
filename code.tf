@@ -66,15 +66,19 @@ resource "aws_subnet" "default" {
   cidr_block              = "10.0.1.0/24"
   map_public_ip_on_launch = true
 }
+# resource "aws_subnet" "sub" {
+#   vpc_id                  = "${aws_vpc.default.id}"
+#   cidr_block              = "10.0.2.0/24"
+#   map_public_ip_on_launch = true
+# }
+# resource "aws_db_subnet_group" "default" {
+#   name       = "db"
+#   subnet_ids = ["${aws_subnet.default.id}", "${aws_subnet.sub.id}"]
 
-resource "aws_db_subnet_group" "default" {
-  name       = "db"
-  subnet_ids = ["${aws_subnet.default.id}"]
-
-  tags = {
-    Name = "My DB subnet group"
-  }
-}
+#   tags = {
+#     Name = "My DB subnet group"
+#   }
+# }
 # Our default security group to access
 # the instances over SSH and HTTP
 resource "aws_security_group" "default" {
@@ -235,5 +239,6 @@ resource "aws_db_instance" "default" {
   username             = "tta"
   password             = "${var.db_key}"
   parameter_group_name = "default.mysql5.7"
-  db_subnet_group_name = "${aws_db_subnet_group.default.name}"
+  publicly_accessible = true
+  # db_subnet_group_name = "${aws_db_subnet_group.default.name}"
 }
