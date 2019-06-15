@@ -67,6 +67,14 @@ resource "aws_subnet" "default" {
   map_public_ip_on_launch = true
 }
 
+resource "aws_db_subnet_group" "default" {
+  name       = "db"
+  subnet_ids = ["${aws_subnet.default.id}"]
+
+  tags = {
+    Name = "My DB subnet group"
+  }
+}
 # Our default security group to access
 # the instances over SSH and HTTP
 resource "aws_security_group" "default" {
@@ -126,7 +134,7 @@ resource "aws_security_group" "default" {
 # 인스턴스
 
 resource "aws_instance" "confluence" {
-  ami           = "ami-08ab3f7e72215fe91" # Amazon Linux 2 AMI (HVM), SSD Volume Type
+  ami           = "ami-022009946a024d269" # Amazon Linux 2 AMI (HVM), SSD Volume Type
   instance_type = "t3.small"
 
   tags = {
@@ -155,24 +163,24 @@ resource "aws_instance" "confluence" {
     command = "echo ${aws_instance.confluence.public_ip} > ip_address_confluence.txt"
   }
 
-   provisioner "file" {
-     source = "download_confluence.sh",
-     destination = "/tmp/script.sh"
-   }
-  provisioner "remote-exec" {
-    inline = [
-  #    "sudo swapoff -a",
-  #    "sudo dd if=/dev/z,ero of=/var/swapfile bs=1M count=1024",
-  #    "sudo mkswap /var/swapfile",
-  #    "sudo swapon /var/swapfile",
-  #    "sudo swapon -s",
-       "sudo bash /tmp/script.sh"
-    ]
-  }
+  #  provisioner "file" {
+  #    source = "download_confluence.sh",
+  #    destination = "/tmp/script.sh"
+  #  }
+  # provisioner "remote-exec" {
+  #   inline = [
+  # #    "sudo swapoff -a",
+  # #    "sudo dd if=/dev/z,ero of=/var/swapfile bs=1M count=1024",
+  # #    "sudo mkswap /var/swapfile",
+  # #    "sudo swapon /var/swapfile",
+  # #    "sudo swapon -s",
+  #      "sudo bash /tmp/script.sh"
+  #   ]
+  # }
 }
 
 resource "aws_instance" "jira" {
-  ami           = "ami-08ab3f7e72215fe91" # Amazon Linux 2 AMI (HVM), SSD Volume Type
+  ami           = "ami-04e00e2e438d95d0d" # Amazon Linux 2 AMI (HVM), SSD Volume Type
   instance_type = "t3.small"
 
   tags = {
@@ -201,20 +209,20 @@ resource "aws_instance" "jira" {
     command = "echo ${aws_instance.jira.public_ip} > ip_address_jira.txt"
   }
 
-   provisioner "file" {
-     source = "download_jira.sh",
-     destination = "/tmp/script.sh"
-   }
-   provisioner "remote-exec" {
-     inline = [
+  #  provisioner "file" {
+  #    source = "download_jira.sh",
+  #    destination = "/tmp/script.sh"
+  #  }
+  #  provisioner "remote-exec" {
+  #    inline = [
   #    "sudo swapoff -a",
   #    "sudo dd if=/dev/z,ero of=/var/swapfile bs=1M count=1024",
   #    "sudo mkswap /var/swapfile",
   #    "sudo swapon /var/swapfile",
   #    "sudo swapon -s",
-       "sudo bash /tmp/script.sh"
-     ]
-  }
+  #      "sudo bash /tmp/script.sh"
+  #    ]
+  # }
 }
 
 resource "aws_db_instance" "default" {
@@ -227,4 +235,5 @@ resource "aws_db_instance" "default" {
   username             = "tta"
   password             = "${var.db_key}"
   parameter_group_name = "default.mysql5.7"
+  db_subnet_group_name = "${aws_db_subnet_group.default.name}"
 }
