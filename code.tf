@@ -150,17 +150,6 @@ resource "aws_instance" "confluence" {
   root_block_device {
     volume_size = 10
   }
-resource "aws_db_instance" "default" {
-  allocated_storage    = 10
-  storage_type         = "gp2"
-  engine               = "mysql"
-  engine_version       = "5.7"
-  instance_class       = "db.t3.micro"
-  name                 = "confjira_db"
-  username             = "tta"
-  password             = "${var.db_key}"
-  parameter_group_name = "default.mysql5.7"
-}
 
   provisioner "local-exec" {
     command = "echo ${aws_instance.confluence.public_ip} > ip_address_confluence.txt"
@@ -222,8 +211,19 @@ resource "aws_instance" "jira" {
   #    "sudo mkswap /var/swapfile",
   #    "sudo swapon /var/swapfile",
   #    "sudo swapon -s",
-  #     "chmod +x /tmp/script.sh",
-  #     "/tmp/script.sh"
+  #     "bash tmp/script.sh"
   #   ]
   # }
+}
+
+resource "aws_db_instance" "default" {
+  allocated_storage    = 10
+  storage_type         = "gp2"
+  engine               = "mysql"
+  engine_version       = "5.7"
+  instance_class       = "db.t3.micro"
+  name                 = "confjira_db"
+  username             = "tta"
+  password             = "${var.db_key}"
+  parameter_group_name = "default.mysql5.7"
 }
