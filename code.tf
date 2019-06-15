@@ -172,7 +172,7 @@ resource "aws_instance" "confluence" {
 
 resource "aws_instance" "jira" {
   ami           = "ami-0b02efe469ac0d8b0" # Amazon Linux 2 AMI (HVM), SSD Volume Type
-  instance_type = "t3.small"
+  instance_type = "t3.medium"
 
   tags = {
     Name     = "jira"
