@@ -126,8 +126,8 @@ resource "aws_security_group" "default" {
 # 인스턴스
 
 resource "aws_instance" "confluence" {
-  ami           = "ami-0d854956dd41273cf" # Amazon Linux 2 AMI (HVM), SSD Volume Type
-  instance_type = "t3.medium"
+  ami           = "ami-08ab3f7e72215fe91" # Amazon Linux 2 AMI (HVM), SSD Volume Type
+  instance_type = "t3.small"
 
   tags = {
     Name     = "confluence"
@@ -150,6 +150,17 @@ resource "aws_instance" "confluence" {
   root_block_device {
     volume_size = 10
   }
+resource "aws_db_instance" "default" {
+  allocated_storage    = 10
+  storage_type         = "gp2"
+  engine               = "mysql"
+  engine_version       = "5.7"
+  instance_class       = "db.t3.micro"
+  name                 = "confjira_db"
+  username             = "tta"
+  password             = "${var.db_key}"
+  parameter_group_name = "default.mysql5.7"
+}
 
   provisioner "local-exec" {
     command = "echo ${aws_instance.confluence.public_ip} > ip_address_confluence.txt"
@@ -171,8 +182,8 @@ resource "aws_instance" "confluence" {
 }
 
 resource "aws_instance" "jira" {
-  ami           = "ami-0b02efe469ac0d8b0" # Amazon Linux 2 AMI (HVM), SSD Volume Type
-  instance_type = "t3.medium"
+  ami           = "ami-08ab3f7e72215fe91" # Amazon Linux 2 AMI (HVM), SSD Volume Type
+  instance_type = "t3.small"
 
   tags = {
     Name     = "jira"
