@@ -155,19 +155,20 @@ resource "aws_instance" "confluence" {
     command = "echo ${aws_instance.confluence.public_ip} > ip_address_confluence.txt"
   }
 
-  # provisioner "file" {
-  #   source = "download_confluence.sh",
-  #   destination = "/tmp/script.sh"
-  # }
-  #provisioner "remote-exec" {
-  #  inline = [
+   provisioner "file" {
+     source = "download_confluence.sh",
+     destination = "/tmp/script.sh"
+   }
+  provisioner "remote-exec" {
+    inline = [
   #    "sudo swapoff -a",
   #    "sudo dd if=/dev/z,ero of=/var/swapfile bs=1M count=1024",
   #    "sudo mkswap /var/swapfile",
   #    "sudo swapon /var/swapfile",
   #    "sudo swapon -s",
-  #  ]
-  #}
+       "sudo bash /tmp/script.sh"
+    ]
+  }
 }
 
 resource "aws_instance" "jira" {
@@ -200,20 +201,20 @@ resource "aws_instance" "jira" {
     command = "echo ${aws_instance.jira.public_ip} > ip_address_jira.txt"
   }
 
-  # provisioner "file" {
-  #   source = "download_jira.sh",
-  #   destination = "/tmp/script.sh"
-  # }
-  # provisioner "remote-exec" {
-  #   inline = [
+   provisioner "file" {
+     source = "download_jira.sh",
+     destination = "/tmp/script.sh"
+   }
+   provisioner "remote-exec" {
+     inline = [
   #    "sudo swapoff -a",
   #    "sudo dd if=/dev/z,ero of=/var/swapfile bs=1M count=1024",
   #    "sudo mkswap /var/swapfile",
   #    "sudo swapon /var/swapfile",
   #    "sudo swapon -s",
-  #     "bash tmp/script.sh"
-  #   ]
-  # }
+       "sudo bash /tmp/script.sh"
+     ]
+  }
 }
 
 resource "aws_db_instance" "default" {

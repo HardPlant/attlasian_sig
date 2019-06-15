@@ -9,5 +9,5 @@ DESCRIPTION
   default = "/home/seongwon/repo/atlassian_sig/id_rsa.pub"
 }
 variable "key_name" {
-  default = "ConfluenceJira"
+  default = "ConfJira2"
 }
